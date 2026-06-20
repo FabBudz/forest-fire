@@ -11,9 +11,9 @@ HEIGHT      = ROWS * CELL_SIZE
 FPS         = 15
 
 # % 
-P_TREE      = 0.1      # szansa wyrostu nowego drzewa na pustym polu
-P_IGNITE    = 0.00005     # szansa spontanicznego zapłonu drzewa
-P_THREE_SPAWN = 0.55 # procent drzew  przy wygenerowaniu planszy
+P_TREE      = 0.05     # szansa wyrostu nowego drzewa na pustym polu
+P_IGNITE    = 0.0001     # szansa spontanicznego zapłonu drzewa
+P_THREE_SPAWN = 0 # procent drzew na nowo wygenerowanej planszy
 
 
 EMPTY       = 0
@@ -30,7 +30,7 @@ COLOR_BURNING2  = (200,  50,   0)   # drugi kolor ognia
 
 # tworzenie siatki 
 def make_grid():
-    # tworzenie 
+
     grid = []
     for a in range(ROWS):        # dla każdego wiersza
         row = []
@@ -57,21 +57,21 @@ def step(grid):
             state = grid[r][c]
 
             if state == BURNING:
-                # 4. ogień gaśnie -> puste pole
+                # spalone pole 
                 new_grid[r][c] = EMPTY
 
             elif state == TREE:
-                # 2. czy któryś sąsiad płonie?
+                # sprawdzanie czy któryś sąsiad płonie
                 if has_burning_neighbor(grid, r, c):
                     new_grid[r][c] = BURNING
-                # 3. spontaniczny zapłon
+                # spontaniczny zapłon
                 elif random.random() < P_IGNITE:
                     new_grid[r][c] = BURNING
                 else:
                     new_grid[r][c] = TREE
 
-            else:  # EMPTY
-                # 
+            else:  # magia natury
+                
                 if random.random() < P_TREE:
                     new_grid[r][c] = TREE
                 else:
@@ -94,7 +94,7 @@ def has_burning_neighbor(grid, r, c):
     return False
 
 #RYsowanie
-def draw(surface, grid, tick):
+def draw(surface, grid):
     surface.fill(COLOR_BG)
 
     for r in range(ROWS):
@@ -167,13 +167,19 @@ def main():
                     speed = min(speed + 5, 120)
                 if event.key == pygame.K_MINUS:
                     speed = max(speed - 5, 1)
-
+ 
             # Thor
             if event.type == pygame.MOUSEBUTTONDOWN:
-                mx, my = pygame.mouse.get_pos()
-                c, r = mx // CELL_SIZE, my // CELL_SIZE
-                if 0 <= r < ROWS and 0 <= c < COLS:
-                    grid[r][c] = BURNING
+                pos = pygame.mouse.get_pos()
+                mouse_x = pos[0]
+                mouse_y = pos[1]
+
+                col = mouse_x // CELL_SIZE
+                row = mouse_y // CELL_SIZE
+
+                if row >= 0 and row < ROWS:
+                    if col >= 0 and col < COLS:
+                        grid[row][col] = BURNING
 
         
         
@@ -184,7 +190,7 @@ def main():
             generation += 1
 
         # wyświetlanie 
-        draw(screen, grid, generation)
+        draw(screen, grid)
         draw_hud(screen, font, grid, paused, generation)
         pygame.display.flip()
         clock.tick(speed)

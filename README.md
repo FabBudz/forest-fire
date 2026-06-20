@@ -36,13 +36,11 @@ python forest_fire.py
 
 lewy przyciśk myszki - rozpalenie ognia w miejscu kursora 
 +, = - przyspieszenie symulacji
-- - 
+r - Zresetowanie planszy
 
 ---
 
 ## Parametry
-
-Na górze pliku `forest_fire.py`:
 
 ```python
 P_TREE    = 0.55    # prawdopodobieństwo odrostu drzewa
